@@ -3,13 +3,16 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "./components/ui/sonner";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "./index.css";
-import App from "./App"; // omit extension for clarity
-import Error from "./components/Error"; // omit extension
+import App from "./App";
+import Error from "./components/Error";
 import HomePage from "./components/HomePage";
 import SnacksPage from "./components/SnacksPage";
 import StudentsPage from "./components/StudentsPage";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -40,7 +43,9 @@ if (!rootEl) {
 
 createRoot(rootEl).render(
   <StrictMode>
-    <RouterProvider router={router} />
-    <Toaster position="bottom-right" richColors />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <Toaster position="bottom-right" richColors />
+    </QueryClientProvider>
   </StrictMode>
 );

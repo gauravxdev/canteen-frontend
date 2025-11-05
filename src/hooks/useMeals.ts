@@ -1,48 +1,36 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import type { Meal } from '../types';
 
+const fetchMeals = async (): Promise<Meal[]> => {
+  const response = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=');
+  if (!response.ok) throw new Error('Failed to fetch meals');
+  const data = await response.json();
+  return data.meals || [];
+};
+
 export const useMeals = () => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [meals, setMeals] = useState<Meal[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const { data: meals = [], isLoading, error, refetch } = useQuery<Meal[]>({
+    queryKey: ['meals'],
+    queryFn: fetchMeals,
+    staleTime: 300000, // 5 minutes
+    retry: 1,
+  });
 
-  const fetchMeals = useCallback(async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=');
-      if (!response.ok) {
-        throw new Error('Failed to fetch meals');
-      }
-      const data = await response.json();
-      setMeals(data.meals || []);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-      console.error('Error fetching meals:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const filteredMeals = meals.filter(
-    meal =>
-      meal.strMeal.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      meal.strCategory.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMeals = meals.filter(meal => 
+    meal.strMeal.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (meal.strCategory?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false)
   );
 
-  // Fetch meals on component mount
-  useEffect(() => {
-    fetchMeals();
-  }, [fetchMeals]);
-
   return {
-    loading,
-    error,
+    loading: isLoading,
+    error: error?.message || null,
     meals: filteredMeals,
     searchTerm,
     setSearchTerm,
-    refetch: fetchMeals,
+    refetch,
   };
 };
 
