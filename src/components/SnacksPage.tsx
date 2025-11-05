@@ -1,6 +1,6 @@
 import { useMeals } from "../hooks/useMeals";
 import SnackCard from "./snacks/SnackCard";
-import { LoadingSpinner } from "./ui/loading-spinner";
+import { Spinner } from "./ui/spinner";
 import { toast } from "sonner";
 
 const SnacksPage = () => {
@@ -21,7 +21,7 @@ const SnacksPage = () => {
   if (loading && !meals.length) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+        <Spinner className="h-12 w-12" />
       </div>
     );
   }

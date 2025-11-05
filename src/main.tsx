@@ -11,8 +11,16 @@ import Error from "./components/Error";
 import HomePage from "./components/HomePage";
 import SnacksPage from "./components/SnacksPage";
 import StudentsPage from "./components/StudentsPage";
+import { StudentDetailPage } from "./pages/StudentDetailPage";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const router = createBrowserRouter([
   {
@@ -29,7 +37,16 @@ const router = createBrowserRouter([
       },
       {
         path: "/students",
-        element: <StudentsPage />,
+        children: [
+          {
+            index: true,
+            element: <StudentsPage />,
+          },
+          {
+            path: ":studentId",
+            element: <StudentDetailPage />,
+          },
+        ],
       },
     ],
     errorElement: <Error />,

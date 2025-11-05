@@ -1,4 +1,7 @@
-import type { Student } from "../../data/students.mock"
+import { Button } from "../ui/button";
+import { Eye } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import type { Student } from "../../data/students.mock";
 import {
   Table,
   TableBody,
@@ -7,10 +10,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/table"
+} from "../ui/table";
 
 interface StudentTableProps {
-  students: Student[]
+  students: Student[];
 }
 
 const StudentTable = ({ students }: StudentTableProps) => {
@@ -23,6 +26,7 @@ const StudentTable = ({ students }: StudentTableProps) => {
           <TableHead>Name</TableHead>
           <TableHead>Referral Code</TableHead>
           <TableHead className="text-right">Total Spent (₹)</TableHead>
+          <TableHead className="w-[100px] text-right">Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -34,11 +38,19 @@ const StudentTable = ({ students }: StudentTableProps) => {
             <TableCell className="text-right font-mono">
               {student.totalSpent.toFixed(2)}
             </TableCell>
+            <TableCell className="text-right">
+              <Button asChild variant="ghost" size="sm">
+                <Link to={`/students/${student.id}`} className="flex items-center gap-1">
+                  <Eye className="h-4 w-4" />
+                  <span className="sr-only">View</span>
+                </Link>
+              </Button>
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>
     </Table>
-  )
-}
+  );
+};
 
-export default StudentTable
+export default StudentTable;
