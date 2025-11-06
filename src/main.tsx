@@ -6,6 +6,8 @@ import { Toaster } from "./components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "./index.css";
+import { StudentProvider } from "./contexts/StudentContext";
+import { students as initialStudents } from "./data/students.mock";
 import App from "./App";
 import Error from "./components/Error";
 import HomePage from "./components/HomePage";
@@ -61,8 +63,10 @@ if (!rootEl) {
 createRoot(rootEl).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <Toaster position="bottom-right" richColors />
+      <StudentProvider initialStudents={initialStudents}>
+        <RouterProvider router={router} />
+        <Toaster position="bottom-right" richColors />
+      </StudentProvider>
     </QueryClientProvider>
   </StrictMode>
 );
