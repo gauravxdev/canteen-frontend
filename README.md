@@ -1,11 +1,61 @@
-# React + TypeScript + Vite
+# School Canteen Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application for managing school canteen operations, built with React, TypeScript, and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- View and manage student information
+- Browse available meals and snacks
+- Track orders and meal plans
+- Responsive design for all devices
+
+## Prerequisites
+
+- Node.js (v16 or higher)
+- npm (v7 or higher) or yarn
+- Git
+
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/school-canteen-frontend.git
+   cd school-canteen-frontend
+   ```
+
+2. **Install dependencies**
+   Using npm:
+   ```bash
+   npm install
+   ```
+   
+   Or using yarn:
+   ```bash
+   yarn
+   ```
+
+3. **Environment Setup**
+   Create a `.env` file in the root directory and add the following environment variables:
+   ```env
+   VITE_API_BASE_URL=http://your-backend-api-url
+   # Add other environment variables as needed
+   ```
+
+4. **Start the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+   The application will be available at `http://localhost:5173`
+
+## Available Scripts
+
+- `dev` - Start the development server
+- `build` - Build the application for production
+- `preview` - Preview the production build locally
+- `lint` - Run ESLint
+- `typecheck` - Check TypeScript types
 
 ## React Compiler
 
