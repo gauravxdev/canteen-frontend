@@ -1,35 +1,34 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getStudentOrders } from '../data/mockOrders';
 import type { Order } from '../data/mockOrders';
 
+const fetchStudentOrders = async (studentId: string): Promise<Order[]> => {
+  // Simulate API call with delay
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(getStudentOrders(studentId));
+    }, 500);
+  });
+};
+
 export const useStudentOrders = (studentId: string) => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { 
+    data: orders = [], 
+    isLoading: loading, 
+    error, 
+    refetch 
+  } = useQuery<Order[], Error>({
+    queryKey: ['studentOrders', studentId],
+    queryFn: () => fetchStudentOrders(studentId),
+    enabled: !!studentId,
+    staleTime: 300000, // 5 minutes
+    retry: 1,
+  });
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        // Simulate API call
-        const data = await new Promise<Order[]>((resolve) => {
-          setTimeout(() => {
-            resolve(getStudentOrders(studentId));
-          }, 500);
-        });
-        setOrders(data);
-      } catch (err) {
-        setError('Failed to fetch orders');
-        console.error('Error fetching orders:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (studentId) {
-      fetchOrders();
-    }
-  }, [studentId]);
-
-  return { orders, loading, error };
+  return { 
+    orders, 
+    loading, 
+    error: error?.message || null,
+    refetch 
+  };
 };
