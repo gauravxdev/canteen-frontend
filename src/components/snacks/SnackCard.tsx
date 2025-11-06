@@ -5,7 +5,7 @@ import { formatPrice } from "../../types/index"
 import { OrderModal } from './OrderModal';
 import { OrderButton } from './OrderButton';
 import { useOrderCount } from '../../hooks/useOrderCount';
-import { MOCK_STUDENTS } from '../../data/mockStudents';
+import { useStudentContext } from '../../contexts/StudentContext';
 
 interface SnackCardProps {
   meal: Meal
@@ -15,6 +15,7 @@ interface SnackCardProps {
 export const SnackCard = ({ meal, onOrder }: SnackCardProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOrdering, setIsOrdering] = useState(false);
+  const { students } = useStudentContext();
   const orderCount = useOrderCount(meal.idMeal);
   const price = formatPrice(meal.idMeal);
   
@@ -76,7 +77,7 @@ export const SnackCard = ({ meal, onOrder }: SnackCardProps) => {
         onClose={() => setIsModalOpen(false)}
         onOrder={handleOrderSubmit}
         snackName={meal.strMeal}
-        students={MOCK_STUDENTS}
+        students={students}
       />
     </div>
   )

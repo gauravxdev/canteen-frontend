@@ -2,15 +2,29 @@ import { useMeals } from "../hooks/useMeals";
 import SnackCard from "./snacks/SnackCard";
 import { Spinner } from "./ui/spinner";
 import { toast } from "sonner";
+import { useStudentContext } from "../contexts/StudentContext";
+import { formatPrice } from "../types/index";
 
 const SnacksPage = () => {
   const { loading, error, meals, refetch } = useMeals();
+  const { updateStudentSpent } = useStudentContext();
 
   const handleOrder = async (mealId: string, studentId: string, quantity: number) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      const mealName = meals.find(m => m.idMeal === mealId)?.strMeal;
-      toast.success(`Order placed! ${quantity}x ${mealName} for student #${studentId}`);
+      
+      const meal = meals.find(m => m.idMeal === mealId);
+      const mealName = meal?.strMeal;
+      
+      // Calculate price and total cost
+      const priceString = formatPrice(mealId);
+      const price = parseFloat(priceString.replace(' INR', ''));
+      const totalCost = price * quantity;
+      
+      // Update student's total spent
+      updateStudentSpent(studentId, totalCost);
+      
+      toast.success(`Order placed! ${quantity}x ${mealName} for ₹${totalCost.toFixed(2)}`);
       await refetch();
     } catch (err) {
       toast.error('Failed to place order. Please try again.');

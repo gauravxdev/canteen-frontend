@@ -1,4 +1,7 @@
 import React from 'react';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -11,6 +14,12 @@ import {
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
+const studentFormSchema = z.object({
+  name: z.string().min(1, "Student name is required").trim(),
+});
+
+export type StudentFormValues = z.infer<typeof studentFormSchema>;
+
 interface AddStudentDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -18,87 +27,78 @@ interface AddStudentDialogProps {
 }
 
 const AddStudentDialog = ({ isOpen, onOpenChange, onAddStudent }: AddStudentDialogProps) => {
-  const [name, setName] = React.useState('');
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<StudentFormValues>({
+    resolver: zodResolver(studentFormSchema),
+    defaultValues: {
+      name: "",
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (name.trim()) {
-      onAddStudent(name.trim());
-      setName('');
+  const onSubmit = async (values: StudentFormValues) => {
+    try {
+      await onAddStudent(values.name);
+      reset();
       onOpenChange(false);
+    } catch (error) {
+      console.error("Error adding student:", error);
     }
   };
 
-  return React.createElement(
-    Dialog,
-    { 
-      open: isOpen, 
-      onOpenChange: (open: boolean) => {
-        if (!open) {
-          setName('');
-        }
-        onOpenChange(open);
-      }
-    },
-    React.createElement(
-      DialogContent,
-      { className: "sm:max-w-[425px]" },
-      React.createElement(
-        DialogHeader,
-        null,
-        React.createElement(DialogTitle, null, "Add New Student"),
-        React.createElement(
-          DialogDescription,
-          null,
-          "Enter the student's name and click Add when you're done."
-        )
-      ),
-      React.createElement(
-        "form",
-        { onSubmit: handleSubmit },
-        React.createElement(
-          "div",
-          { className: "grid gap-4 py-4" },
-          React.createElement(
-            "div",
-            { className: "grid grid-cols-4 items-center gap-4" },
-            React.createElement(
-              Label,
-              { htmlFor: "name", className: "text-right" },
-              "Name"
-            ),
-            React.createElement(
-              "div",
-              { className: "col-span-3 space-y-1" },
-              React.createElement(Input, {
-                id: "name",
-                value: name,
-                onChange: (e) => setName(e.target.value),
-                placeholder: "Student name"
-              })
-            )
-          )
-        ),
-        React.createElement(
-          DialogFooter,
-          null,
-          React.createElement(
-            Button,
-            { type: "button", variant: "outline", onClick: () => onOpenChange(false) },
-            "Cancel"
-          ),
-          React.createElement(
-            Button,
-            { 
-              type: "submit", 
-              className: "bg-black text-white hover:bg-gray-800",
-              disabled: !name.trim()
-            },
-            "Add Student"
-          )
-        )
-      )
-    )
+  const handleDialogChange = (open: boolean) => {
+    if (!open) {
+      reset();
+    }
+    onOpenChange(open);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleDialogChange}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add New Student</DialogTitle>
+          <DialogDescription>
+            Enter the student's name and click Add when you're done.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              placeholder="Student name"
+              {...register("name")}
+              disabled={isSubmitting}
+              aria-invalid={errors.name ? "true" : "false"}
+            />
+            {errors.name && (
+              <p className="text-sm text-red-500">{errors.name.message}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => handleDialogChange(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              className="bg-black text-white hover:bg-gray-800"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Adding..." : "Add Student"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 
